@@ -1,102 +1,37 @@
 'use client'
 
+import { useParams, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { profiles } from '../../data/profiles'
+import { letterMeanings } from '../../data/questions'
 
-const letterMeanings = {
-  S: {
-    name: 'Sweet',
-    description: 'You have a strong preference for sweet flavors, desserts, and foods with natural sweetness.',
-    emoji: '🍯'
-  },
-  U: {
-    name: 'Umami',
-    description: 'You gravitate towards savory, rich flavors and foods with deep, complex taste profiles.',
-    emoji: '🍖'
-  },
-  M: {
-    name: 'Mild',
-    description: 'You prefer balanced, gentle flavors and appreciate subtle heat and spice notes.',
-    emoji: '🌿'
-  },
-  H: {
-    name: 'Hot',
-    description: 'You love spicy food and enjoy the excitement of heat in your dishes.',
-    emoji: '🌶️'
-  },
-  C: {
-    name: 'Crunchy',
-    description: 'You seek out foods with crispy textures and enjoy the satisfaction of crunch.',
-    emoji: '🥨'
-  },
-  T: {
-    name: 'Tender',
-    description: 'You prefer soft, melt-in-your-mouth textures and well-cooked, tender foods.',
-    emoji: '🍲'
-  },
-  P: {
-    name: 'Pure',
-    description: 'You appreciate simple, clean flavors and dishes with fewer, high-quality ingredients.',
-    emoji: '🍳'
-  },
-  L: {
-    name: 'Layered',
-    description: 'You enjoy complex dishes with multiple components and intricate flavor combinations.',
-    emoji: '👨‍🍳'
-  }
-}
+const preferencePairs = [
+  { left: 'S', right: 'U', label: 'Taste' },
+  { left: 'M', right: 'H', label: 'Heat' },
+  { left: 'C', right: 'T', label: 'Texture' },
+  { left: 'P', right: 'L', label: 'Complexity' }
+]
 
-const foodTypes = {
-  // Sweet, Mild, Crunchy, Pure
-  'SMCP': {
-    title: 'The Sweet Snacker',
-    description: 'You gravitate towards simple, sweet treats with a satisfying crunch. Think honey-roasted nuts, caramel popcorn, and crispy cookies.',
-    traits: ['Sweet tooth', 'Enjoys snacking', 'Loves crunch', 'Prefers simple flavors'],
-    recommendations: ['Candied nuts', 'Shortbread cookies', 'Caramel popcorn', 'Apple chips']
-  },
-  // Umami, Hot, Tender, Layered
-  'UHTL': {
-    title: 'The Spice Seeker',
-    description: 'You love complex, spicy dishes with rich umami flavors and tender textures. Think curry, slow-cooked spicy stews, and braised meats.',
-    traits: ['Heat lover', 'Enjoys rich flavors', 'Appreciates tenderness', 'Loves complex dishes'],
-    recommendations: ['Spicy curry', 'Braised short ribs', 'Hot pot', 'Szechuan dishes']
-  },
-  // Sweet, Hot, Tender, Layered
-  'SHTL': {
-    title: 'The Fusion Explorer',
-    description: 'You enjoy the interplay of sweet and spicy, with complex layers of flavor in tender dishes. Think Korean BBQ, Thai curries, and fusion desserts.',
-    traits: ['Sweet & spicy fan', 'Adventurous palate', 'Enjoys soft textures', 'Loves flavor complexity'],
-    recommendations: ['Thai mango curry', 'Korean BBQ', 'Spicy chocolate desserts', 'Caramelized dishes']
-  },
-  // Umami, Mild, Crunchy, Layered
-  'UMCL': {
-    title: 'The Texture Enthusiast',
-    description: 'You seek out complex savory dishes with contrasting textures. Think tempura, crispy duck, and layered pastries with savory fillings.',
-    traits: ['Savory preference', 'Texture focused', 'Enjoys contrasts', 'Appreciates complexity'],
-    recommendations: ['Tempura dishes', 'Crispy duck', 'Savory pastries', 'Textured salads']
-  },
-  // Sweet, Mild, Tender, Pure
-  'SMTP': {
-    title: 'The Comfort Seeker',
-    description: 'You love simple, sweet comfort foods with soft textures. Think puddings, fresh bread, and smooth desserts.',
-    traits: ['Sweet comfort foods', 'Gentle flavors', 'Soft textures', 'Simple preparations'],
-    recommendations: ['Rice pudding', 'Fresh bread', 'Vanilla custard', 'Steamed cakes']
-  },
-  // Umami, Hot, Crunchy, Pure
-  'UHCP': {
-    title: 'The Bold Minimalist',
-    description: 'You enjoy straightforward, spicy dishes with satisfying crunch. Think spicy chips, crispy chicken wings, and roasted nuts.',
-    traits: ['Spice lover', 'Texture seeker', 'Direct flavors', 'Simple preparations'],
-    recommendations: ['Spicy chips', 'Hot wings', 'Roasted nuts', 'Crispy chili']
-  }
-}
-
-export default function Results({ params }) {
-  const { type } = params
-  const profile = foodTypes[type] || {
+export default function Results() {
+  const { type } = useParams()
+  const searchParams = useSearchParams()
+  const profile = profiles[type] || {
     title: 'Unique Food Explorer',
     description: 'Your taste profile is uniquely yours! You have a distinctive combination of preferences that makes your palate special.',
     traits: ['Unique combination', 'Personal style', 'Individual taste', 'Special preferences'],
     recommendations: ['Custom tasting menus', 'Fusion restaurants', 'Experimental cooking', 'Food exploration']
+  }
+
+  // Get percentages from URL parameters
+  const percentagesParam = searchParams.get('percentages')
+  const percentages = percentagesParam ? JSON.parse(percentagesParam) : null
+
+  const getPercentage = (letter) => {
+    if (percentages && percentages[letter]) {
+      return percentages[letter]
+    }
+    // Fallback if percentages aren't available
+    return type.includes(letter) ? 60 : 40
   }
 
   return (
@@ -121,6 +56,46 @@ export default function Results({ params }) {
             <p className="text-lg mb-8 text-[var(--text-gray)]">
               {profile.description}
             </p>
+          </div>
+
+          {/* Preference Breakdown */}
+          <div className="card p-8 mb-8">
+            <h3 className="text-2xl font-bold mb-6 text-center">Your Preference Breakdown</h3>
+            <div className="space-y-6">
+              {preferencePairs.map(({ left, right, label }) => (
+                <div key={label} className="relative">
+                  <div className="flex justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="w-8 h-8 bg-[var(--accent-pink)] rounded-lg flex items-center justify-center">
+                        {letterMeanings[left].emoji}
+                      </span>
+                      <span className="font-medium">
+                        {letterMeanings[left].name} ({left})
+                      </span>
+                      <span className="text-[var(--text-gray)]">{getPercentage(left)}%</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[var(--text-gray)]">{getPercentage(right)}%</span>
+                      <span className="font-medium">
+                        {letterMeanings[right].name} ({right})
+                      </span>
+                      <span className="w-8 h-8 bg-[var(--accent-blue)] rounded-lg flex items-center justify-center">
+                        {letterMeanings[right].emoji}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="h-3 bg-[var(--bg-lavender)] rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-[var(--primary-purple)] rounded-full transition-all duration-500"
+                      style={{ width: `${getPercentage(left)}%` }}
+                    ></div>
+                  </div>
+                  <div className="text-center text-sm text-[var(--text-gray)] mt-1">
+                    {label}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Type Breakdown */}

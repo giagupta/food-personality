@@ -2,133 +2,13 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { questions, letterMeanings } from '../data/questions'
 
-const questions = [
-  {
-    id: 1,
-    question: "When you're feeling down, what kind of comfort food do you reach for?",
-    answers: [
-      { text: "A warm chocolate chip cookie or ice cream", type: "S" },
-      { text: "A bowl of rich ramen or mac and cheese", type: "U" }
-    ]
-  },
-  {
-    id: 2,
-    question: "At a buffet, which section do you visit first?",
-    answers: [
-      { text: "The dessert station with pastries and cakes", type: "S" },
-      { text: "The grilled meats and seafood section", type: "U" }
-    ]
-  },
-  {
-    id: 3,
-    question: "At an Asian restaurant, your go-to order would be:",
-    answers: [
-      { text: "Pad Thai or mild curry with coconut milk", type: "M" },
-      { text: "Szechuan dishes or spicy Korean ramyeon", type: "H" }
-    ]
-  },
-  {
-    id: 4,
-    question: "When trying a new cuisine, you prefer:",
-    answers: [
-      { text: "Starting with familiar, milder dishes", type: "M" },
-      { text: "Going straight for the authentic spicy specialties", type: "H" }
-    ]
-  },
-  {
-    id: 5,
-    question: "Your ideal snack while watching a movie would be:",
-    answers: [
-      { text: "Popcorn, chips, or crackers", type: "C" },
-      { text: "Chocolate, cheese, or fruit", type: "T" }
-    ]
-  },
-  {
-    id: 6,
-    question: "When eating a sandwich, what matters most?",
-    answers: [
-      { text: "The crunch of fresh lettuce and toasted bread", type: "C" },
-      { text: "The tenderness of the fillings and bread", type: "T" }
-    ]
-  },
-  {
-    id: 7,
-    question: "When cooking pasta, you prefer it:",
-    answers: [
-      { text: "Al dente with a bit of bite", type: "C" },
-      { text: "Soft and tender throughout", type: "T" }
-    ]
-  },
-  {
-    id: 8,
-    question: "Your ideal breakfast would be:",
-    answers: [
-      { text: "Simple eggs and toast", type: "P" },
-      { text: "A loaded breakfast burrito with multiple toppings", type: "L" }
-    ]
-  },
-  {
-    id: 9,
-    question: "When making a salad, you prefer:",
-    answers: [
-      { text: "A few fresh ingredients with light dressing", type: "P" },
-      { text: "Many ingredients with various textures and flavors", type: "L" }
-    ]
-  },
-  {
-    id: 10,
-    question: "At a café, your coffee order is usually:",
-    answers: [
-      { text: "Black coffee or espresso", type: "P" },
-      { text: "A specialty drink with multiple flavors", type: "L" }
-    ]
-  },
-  {
-    id: 11,
-    question: "When having pizza, you typically:",
-    answers: [
-      { text: "Stick to classic margherita or pepperoni", type: "P" },
-      { text: "Load it up with multiple toppings", type: "L" }
-    ]
-  },
-  {
-    id: 12,
-    question: "Your ideal sushi roll would be:",
-    answers: [
-      { text: "A simple nigiri or basic tuna roll", type: "P" },
-      { text: "A dragon roll with multiple ingredients", type: "L" }
-    ]
-  },
-  {
-    id: 13,
-    question: "At a food festival, you're most excited about:",
-    answers: [
-      { text: "Traditional dishes made perfectly", type: "P" },
-      { text: "Innovative fusion creations", type: "L" }
-    ]
-  },
-  {
-    id: 14,
-    question: "When ordering ice cream, you prefer:",
-    answers: [
-      { text: "Classic vanilla or chocolate", type: "S" },
-      { text: "Savory-sweet combinations like salted caramel", type: "U" }
-    ]
-  },
-  {
-    id: 15,
-    question: "Your ideal taco would be:",
-    answers: [
-      { text: "Mild chicken or fish with fresh salsa", type: "M" },
-      { text: "Spicy carne asada with hot sauce", type: "H" }
-    ]
-  }
-]
+const questionsData = questions
 
 export default function Quiz() {
   const [currentQuestion, setCurrentQuestion] = useState(0)
-  const [answers, setAnswers] = useState(new Array(questions.length).fill(null))
+  const [answers, setAnswers] = useState(new Array(questionsData.length).fill(null))
   const router = useRouter()
 
   const handleAnswer = (type) => {
@@ -136,7 +16,7 @@ export default function Quiz() {
     newAnswers[currentQuestion] = type
     setAnswers(newAnswers)
 
-    if (currentQuestion < questions.length - 1) {
+    if (currentQuestion < questionsData.length - 1) {
       setCurrentQuestion(currentQuestion + 1)
     }
   }
@@ -148,32 +28,61 @@ export default function Quiz() {
   }
 
   const handleNext = () => {
-    if (currentQuestion < questions.length - 1) {
+    if (currentQuestion < questionsData.length - 1) {
       setCurrentQuestion(currentQuestion + 1)
     }
   }
 
   const handleSubmit = () => {
-    // Calculate food personality type
-    const types = {
+    // Count preferences
+    const counts = {
       S: 0, U: 0,  // Sweet vs Umami
       M: 0, H: 0,  // Mild vs Hot
       C: 0, T: 0,  // Crunchy vs Tender
       P: 0, L: 0   // Pure vs Layered
     }
     
+    // Count total questions for each dimension
+    const totals = {
+      SU: 0, // Sweet vs Umami questions
+      MH: 0, // Mild vs Hot questions
+      CT: 0, // Crunchy vs Tender questions
+      PL: 0  // Pure vs Layered questions
+    }
+
     answers.forEach(answer => {
-      if (answer) types[answer]++
+      if (answer) {
+        counts[answer]++
+        // Increment the total for the corresponding dimension
+        if (answer === 'S' || answer === 'U') totals.SU++
+        if (answer === 'M' || answer === 'H') totals.MH++
+        if (answer === 'C' || answer === 'T') totals.CT++
+        if (answer === 'P' || answer === 'L') totals.PL++
+      }
     })
 
+    // Calculate percentages
+    const percentages = {
+      S: Math.round((counts.S / totals.SU) * 100),
+      U: Math.round((counts.U / totals.SU) * 100),
+      M: Math.round((counts.M / totals.MH) * 100),
+      H: Math.round((counts.H / totals.MH) * 100),
+      C: Math.round((counts.C / totals.CT) * 100),
+      T: Math.round((counts.T / totals.CT) * 100),
+      P: Math.round((counts.P / totals.PL) * 100),
+      L: Math.round((counts.L / totals.PL) * 100)
+    }
+
+    // Determine dominant type
     const foodType = [
-      types.S > types.U ? 'S' : 'U',
-      types.M > types.H ? 'M' : 'H',
-      types.C > types.T ? 'C' : 'T',
-      types.P > types.L ? 'P' : 'L'
+      counts.S >= counts.U ? 'S' : 'U',
+      counts.M >= counts.H ? 'M' : 'H',
+      counts.C >= counts.T ? 'C' : 'T',
+      counts.P >= counts.L ? 'P' : 'L'
     ].join('')
 
-    router.push(`/results/${foodType}`)
+    // Navigate to results with percentages
+    router.push(`/results/${foodType}?percentages=${JSON.stringify(percentages)}`)
   }
 
   return (
@@ -194,7 +103,7 @@ export default function Quiz() {
               <span className="font-semibold text-[var(--primary-purple)]">
                 Question {currentQuestion + 1}
               </span>
-              <span className="text-[var(--text-gray)]"> of {questions.length}</span>
+              <span className="text-[var(--text-gray)]"> of {questionsData.length}</span>
             </div>
           </div>
 
@@ -203,7 +112,7 @@ export default function Quiz() {
             <div className="w-full bg-[var(--bg-lavender)] rounded-full h-3">
               <div 
                 className="bg-[var(--primary-purple)] h-3 rounded-full transition-all duration-500"
-                style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
+                style={{ width: `${((currentQuestion + 1) / questionsData.length) * 100}%` }}
               ></div>
             </div>
           </div>
@@ -211,11 +120,11 @@ export default function Quiz() {
           {/* Question Card */}
           <div className="card p-8 mb-8">
             <h2 className="text-3xl font-bold mb-8 text-[var(--text-dark)]">
-              {questions[currentQuestion].question}
+              {questionsData[currentQuestion].question}
             </h2>
 
             <div className="space-y-4">
-              {questions[currentQuestion].answers.map((answer, index) => (
+              {questionsData[currentQuestion].answers.map((answer, index) => (
                 <button
                   key={index}
                   onClick={() => handleAnswer(answer.type)}
@@ -244,7 +153,7 @@ export default function Quiz() {
               Back
             </button>
 
-            {currentQuestion === questions.length - 1 && answers[currentQuestion] ? (
+            {currentQuestion === questionsData.length - 1 && answers[currentQuestion] ? (
               <button
                 onClick={handleSubmit}
                 className="primary-button"
@@ -254,9 +163,9 @@ export default function Quiz() {
             ) : (
               <button
                 onClick={handleNext}
-                disabled={currentQuestion === questions.length - 1 || !answers[currentQuestion]}
+                disabled={currentQuestion === questionsData.length - 1 || !answers[currentQuestion]}
                 className={`card px-6 py-3 flex items-center gap-2 ${
-                  currentQuestion === questions.length - 1 || !answers[currentQuestion]
+                  currentQuestion === questionsData.length - 1 || !answers[currentQuestion]
                     ? 'opacity-50 cursor-not-allowed'
                     : 'hover:bg-[var(--bg-lavender)]'
                 }`}
