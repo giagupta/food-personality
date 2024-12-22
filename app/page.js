@@ -18,12 +18,17 @@ export default function Home() {
           </div>
           
           <div className="card p-8 mb-12">
-            <h1 className="text-4xl font-bold mb-4">
-              Hello, Food Explorer!
-            </h1>
-            <p className="text-xl mb-8 text-[var(--text-gray)]">
-              Ready to discover your unique food personality?
-            </p>
+            <div className="text-center mb-16">
+              <div className="mascot mb-6">
+                <span className="text-4xl">🍽️</span>
+              </div>
+              <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                The Taste Bud Test
+              </h1>
+              <p className="text-[var(--text-gray)] text-lg max-w-xl mx-auto">
+                Discover your unique food personality! Take our quiz to find out what your food preferences say about you.
+              </p>
+            </div>
             
             <Link 
               href="/quiz"
