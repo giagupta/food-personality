@@ -61,17 +61,32 @@ export default function Quiz() {
       }
     })
 
-    // Calculate percentages
+    // Calculate percentages ensuring pairs sum to 100
     const percentages = {
-      S: Math.round((counts.S / totals.SU) * 100),
-      U: Math.round((counts.U / totals.SU) * 100),
-      M: Math.round((counts.M / totals.MH) * 100),
-      H: Math.round((counts.H / totals.MH) * 100),
-      C: Math.round((counts.C / totals.CT) * 100),
-      T: Math.round((counts.T / totals.CT) * 100),
-      P: Math.round((counts.P / totals.PL) * 100),
-      L: Math.round((counts.L / totals.PL) * 100)
+      S: Math.round((counts.S / totals.SU) * 100) || 50,
+      U: Math.round((counts.U / totals.SU) * 100) || 50,
+      M: Math.round((counts.M / totals.MH) * 100) || 50,
+      H: Math.round((counts.H / totals.MH) * 100) || 50,
+      C: Math.round((counts.C / totals.CT) * 100) || 50,
+      T: Math.round((counts.T / totals.CT) * 100) || 50,
+      P: Math.round((counts.P / totals.PL) * 100) || 50,
+      L: Math.round((counts.L / totals.PL) * 100) || 50
     }
+
+    // Ensure each pair sums to 100%
+    const adjustPercentages = (a, b) => {
+      const total = percentages[a] + percentages[b]
+      if (total !== 100) {
+        const ratio = 100 / total
+        percentages[a] = Math.round(percentages[a] * ratio)
+        percentages[b] = 100 - percentages[a] // Ensure exact 100% total
+      }
+    }
+
+    adjustPercentages('S', 'U')
+    adjustPercentages('M', 'H')
+    adjustPercentages('C', 'T')
+    adjustPercentages('P', 'L')
 
     // Determine dominant type
     const foodType = [

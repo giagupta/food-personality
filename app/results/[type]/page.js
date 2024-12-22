@@ -31,7 +31,32 @@ export default function Results() {
       return percentages[letter]
     }
     // Fallback if percentages aren't available
-    return type.includes(letter) ? 60 : 40
+    // For each pair, if one letter is in the type, it gets 60%, its complement gets 40%
+    const getComplementaryPercentage = (mainLetter, complementLetter) => {
+      if (type.includes(mainLetter)) {
+        return letter === mainLetter ? 60 : 40
+      } else if (type.includes(complementLetter)) {
+        return letter === complementLetter ? 60 : 40
+      }
+      return 50
+    }
+
+    switch(letter) {
+      case 'S':
+      case 'U':
+        return getComplementaryPercentage('S', 'U')
+      case 'M':
+      case 'H':
+        return getComplementaryPercentage('M', 'H')
+      case 'C':
+      case 'T':
+        return getComplementaryPercentage('C', 'T')
+      case 'P':
+      case 'L':
+        return getComplementaryPercentage('P', 'L')
+      default:
+        return 50
+    }
   }
 
   return (
