@@ -10,8 +10,8 @@ export const letterMeanings = {
 }
 
 export const questions = [
+  // Mixed questions from different dimensions
   {
-    id: 1,
     question: "When you're feeling down, what kind of comfort food do you reach for?",
     answers: [
       { text: "Something sweet like cookies or ice cream", type: "S" },
@@ -19,7 +19,13 @@ export const questions = [
     ]
   },
   {
-    id: 2,
+    question: "Choose your pizza crust:",
+    answers: [
+      { text: "Thin and crispy", type: "C" },
+      { text: "Soft and chewy", type: "T" }
+    ]
+  },
+  {
     question: "How do you like your wings?",
     answers: [
       { text: "Mild or medium - I want to taste the chicken", type: "M" },
@@ -27,47 +33,6 @@ export const questions = [
     ]
   },
   {
-    id: 3,
-    question: "Pick your ideal snack:",
-    answers: [
-      { text: "Chips, crackers, or anything with a crunch", type: "C" },
-      { text: "Soft pretzels or chewy cookies", type: "T" }
-    ]
-  },
-  {
-    id: 4,
-    question: "Which dish appeals to you more?",
-    answers: [
-      { text: "A perfectly grilled steak with just salt and pepper", type: "P" },
-      { text: "A curry with 20+ spices and ingredients", type: "L" }
-    ]
-  },
-  {
-    id: 5,
-    question: "What's your ideal breakfast?",
-    answers: [
-      { text: "Pancakes with maple syrup", type: "S" },
-      { text: "Eggs Benedict with hollandaise", type: "U" }
-    ]
-  },
-  {
-    id: 6,
-    question: "Choose your salsa:",
-    answers: [
-      { text: "Mild and fresh", type: "M" },
-      { text: "Habanero hot", type: "H" }
-    ]
-  },
-  {
-    id: 7,
-    question: "Pick your pizza crust:",
-    answers: [
-      { text: "Thin and crispy", type: "C" },
-      { text: "Thick and chewy", type: "T" }
-    ]
-  },
-  {
-    id: 8,
     question: "Which pasta dish would you prefer?",
     answers: [
       { text: "Classic aglio e olio (garlic and oil)", type: "P" },
@@ -75,15 +40,69 @@ export const questions = [
     ]
   },
   {
-    id: 9,
-    question: "Choose your ideal dessert:",
+    question: "At a buffet, which section do you visit first?",
     answers: [
-      { text: "Classic vanilla ice cream", type: "S" },
-      { text: "Savory cheese plate", type: "U" }
+      { text: "Desserts and pastries", type: "S" },
+      { text: "Grilled meats and seafood", type: "U" }
     ]
   },
   {
-    id: 10,
+    question: "Pick your ideal texture:",
+    answers: [
+      { text: "Crispy fried chicken skin", type: "C" },
+      { text: "Slow-cooked tender meat", type: "T" }
+    ]
+  },
+  {
+    question: "Choose your salsa:",
+    answers: [
+      { text: "Mild and fresh", type: "M" },
+      { text: "Habanero hot", type: "H" }
+    ]
+  },
+  {
+    question: "Your ideal cooking style is:",
+    answers: [
+      { text: "Simple ingredients, minimal seasoning", type: "P" },
+      { text: "Multiple components and spices", type: "L" }
+    ]
+  },
+  {
+    question: "What's your ideal breakfast?",
+    answers: [
+      { text: "Pancakes with maple syrup", type: "S" },
+      { text: "Eggs Benedict with hollandaise", type: "U" }
+    ]
+  },
+  {
+    question: "Your preferred cooking method is:",
+    answers: [
+      { text: "Deep frying or grilling", type: "C" },
+      { text: "Slow cooking or braising", type: "T" }
+    ]
+  },
+  {
+    question: "At a Thai restaurant, your go-to spice level is:",
+    answers: [
+      { text: "Mild to medium - enjoy the flavors", type: "M" },
+      { text: "Thai hot - bring on the challenge", type: "H" }
+    ]
+  },
+  {
+    question: "Choose your sushi:",
+    answers: [
+      { text: "Simple nigiri with fresh fish", type: "P" },
+      { text: "Dragon roll with multiple ingredients", type: "L" }
+    ]
+  },
+  {
+    question: "Choose your ideal snack:",
+    answers: [
+      { text: "Fruit or candy", type: "S" },
+      { text: "Cheese or nuts", type: "U" }
+    ]
+  },
+  {
     question: "How do you like your curry?",
     answers: [
       { text: "Mild and aromatic", type: "M" },
@@ -91,43 +110,17 @@ export const questions = [
     ]
   },
   {
-    id: 11,
-    question: "Pick your taco shell:",
+    question: "Pick your perfect midnight snack:",
     answers: [
-      { text: "Hard shell with a satisfying crunch", type: "C" },
-      { text: "Soft tortilla that wraps everything", type: "T" }
+      { text: "Ice cream or chocolate", type: "S" },
+      { text: "Leftover pizza or sandwich", type: "U" }
     ]
   },
   {
-    id: 12,
-    question: "Which cooking style do you prefer?",
+    question: "Your ideal hot sauce is:",
     answers: [
-      { text: "Simple ingredients, minimal seasoning", type: "P" },
-      { text: "Complex recipes with many components", type: "L" }
-    ]
-  },
-  {
-    id: 13,
-    question: "Choose your ideal beverage:",
-    answers: [
-      { text: "Sweet bubble tea or smoothie", type: "S" },
-      { text: "Rich bone broth or tomato juice", type: "U" }
-    ]
-  },
-  {
-    id: 14,
-    question: "How do you like your kimchi?",
-    answers: [
-      { text: "Fresh and mild", type: "M" },
-      { text: "Aged and spicy", type: "H" }
-    ]
-  },
-  {
-    id: 15,
-    question: "Pick your french fries:",
-    answers: [
-      { text: "Extra crispy with a crunch", type: "C" },
-      { text: "Soft and potato-y inside", type: "T" }
+      { text: "Just a hint of heat", type: "M" },
+      { text: "Ghost pepper level", type: "H" }
     ]
   }
 ]

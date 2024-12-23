@@ -2,8 +2,8 @@
 
 import { useParams, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { profiles } from '../../data/profiles'
-import { letterMeanings } from '../../data/questions'
+import { profiles } from '@/app/data/profiles'
+import { letterMeanings } from '@/app/data/questions'
 
 const preferencePairs = [
   { left: 'S', right: 'U', label: 'Taste' },
@@ -15,11 +15,21 @@ const preferencePairs = [
 export default function Results() {
   const { type } = useParams()
   const searchParams = useSearchParams()
-  const profile = profiles[type] || {
-    title: 'Unique Food Explorer',
-    description: 'Your taste profile is uniquely yours! You have a distinctive combination of preferences that makes your palate special.',
-    traits: ['Unique combination', 'Personal style', 'Individual taste', 'Special preferences'],
-    recommendations: ['Custom tasting menus', 'Fusion restaurants', 'Experimental cooking', 'Food exploration']
+  
+  // Debug logs
+  console.log('Raw type:', type)
+  console.log('Available profiles:', Object.keys(profiles))
+  
+  // Convert type to uppercase and trim any whitespace
+  const normalizedType = type?.toUpperCase()?.trim()
+  console.log('Normalized type:', normalizedType)
+  console.log('Profile found:', profiles[normalizedType])
+  
+  const profile = profiles[normalizedType] || {
+    title: `Unknown Type (${normalizedType})`, // Add type to error message
+    description: `Profile not found for type: ${normalizedType}`,
+    traits: [],
+    recommendations: []
   }
 
   // Get percentages from URL parameters
@@ -59,6 +69,47 @@ export default function Results() {
     }
   }
 
+  const handleShare = async () => {
+    // Create emoji grid based on percentages
+    const createEmojiBar = (percent) => {
+      if (percent >= 80) return '🟪🟪🟪🟪🟪';
+      if (percent >= 60) return '🟪🟪🟪🟪⬜';
+      if (percent >= 40) return '🟪🟪🟪⬜⬜';
+      if (percent >= 20) return '🟪🟪⬜⬜⬜';
+      return '🟪⬜⬜⬜⬜';
+    };
+
+    const pairs = [
+      { left: 'S', right: 'U', leftName: 'Sweet', rightName: 'Umami' },
+      { left: 'M', right: 'H', leftName: 'Mild', rightName: 'Hot' },
+      { left: 'C', right: 'T', leftName: 'Crunchy', rightName: 'Tender' },
+      { left: 'P', right: 'L', leftName: 'Pure', rightName: 'Layered' }
+    ];
+
+    const emojiGrid = pairs.map(({ left, right, leftName, rightName }) => {
+      const leftPercent = getPercentage(left);
+      const rightPercent = getPercentage(right);
+      const bar = createEmojiBar(leftPercent);
+      return `${leftName.padEnd(8)} ${bar} ${rightName}`;
+    }).join('\n');
+
+    const shareText = `🍽️ The Taste Bud Test 🍽️\n\nI'm a ${type} (${profile.title})!\n\n${emojiGrid}`;
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: 'My Food Personality Type',
+          text: shareText
+        });
+      } else {
+        await navigator.clipboard.writeText(shareText);
+        alert('Results copied to clipboard!');
+      }
+    } catch (err) {
+      console.error('Error sharing:', err);
+    }
+  };
+
   return (
     <div className="min-h-screen gradient-bg py-16 relative">
       {/* Decorative shapes */}
@@ -87,39 +138,49 @@ export default function Results() {
           <div className="card p-8 mb-8">
             <h3 className="text-2xl font-bold mb-6 text-center">Your Preference Breakdown</h3>
             <div className="space-y-6">
-              {preferencePairs.map(({ left, right, label }) => (
-                <div key={label} className="relative">
-                  <div className="flex justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="w-8 h-8 bg-[var(--accent-pink)] rounded-lg flex items-center justify-center">
-                        {letterMeanings[left].emoji}
-                      </span>
-                      <span className="font-medium">
-                        {letterMeanings[left].name} ({left})
-                      </span>
-                      <span className="text-[var(--text-gray)]">{getPercentage(left)}%</span>
+              {preferencePairs.map(({ left, right, label }) => {
+                const leftPercent = getPercentage(left)
+                const rightPercent = getPercentage(right)
+                const isLeftDominant = leftPercent >= rightPercent
+
+                return (
+                  <div key={label} className="relative">
+                    <div className="flex justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="w-8 h-8 bg-[var(--accent-pink)] rounded-lg flex items-center justify-center">
+                          {letterMeanings[left].emoji}
+                        </span>
+                        <span className="font-medium">
+                          {letterMeanings[left].name} ({left})
+                        </span>
+                        <span className="text-[var(--text-gray)]">{leftPercent}%</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[var(--text-gray)]">{rightPercent}%</span>
+                        <span className="font-medium">
+                          {letterMeanings[right].name} ({right})
+                        </span>
+                        <span className="w-8 h-8 bg-[var(--accent-blue)] rounded-lg flex items-center justify-center">
+                          {letterMeanings[right].emoji}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[var(--text-gray)]">{getPercentage(right)}%</span>
-                      <span className="font-medium">
-                        {letterMeanings[right].name} ({right})
-                      </span>
-                      <span className="w-8 h-8 bg-[var(--accent-blue)] rounded-lg flex items-center justify-center">
-                        {letterMeanings[right].emoji}
-                      </span>
+                    <div className="h-3 bg-[var(--bg-lavender)] rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full bg-[var(--primary-purple)] rounded-full transition-all duration-500`}
+                        style={{ 
+                          width: `${Math.max(leftPercent, rightPercent)}%`,
+                          marginLeft: isLeftDominant ? '0' : 'auto',
+                          marginRight: isLeftDominant ? 'auto' : '0'
+                        }}
+                      ></div>
+                    </div>
+                    <div className="text-center text-sm text-[var(--text-gray)] mt-1">
+                      {label}
                     </div>
                   </div>
-                  <div className="h-3 bg-[var(--bg-lavender)] rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-[var(--primary-purple)] rounded-full transition-all duration-500"
-                      style={{ width: `${getPercentage(left)}%` }}
-                    ></div>
-                  </div>
-                  <div className="text-center text-sm text-[var(--text-gray)] mt-1">
-                    {label}
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
 
@@ -174,8 +235,21 @@ export default function Results() {
             </div>
           </div>
 
+          {/* Share Button */}
+          <div className="flex justify-center mt-8">
+            <button
+              onClick={handleShare}
+              className="bg-[var(--primary-purple)] text-white px-6 py-3 rounded-full font-medium hover:opacity-90 transition-opacity flex items-center gap-2"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+              </svg>
+              Share Results
+            </button>
+          </div>
+
           {/* Action Button */}
-          <div className="text-center">
+          <div className="text-center mt-8">
             <Link 
               href="/"
               className="primary-button inline-block"

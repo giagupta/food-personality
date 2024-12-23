@@ -139,14 +139,14 @@ export default function Quiz() {
             </h2>
 
             <div className="space-y-4">
-              {questionsData[currentQuestion].answers.map((answer, index) => (
+              {questionsData[currentQuestion].answers.map((answer) => (
                 <button
-                  key={index}
+                  key={answer.type}
                   onClick={() => handleAnswer(answer.type)}
-                  className={`w-full text-left card p-6 transition-all ${
-                    answers[currentQuestion] === answer.type 
-                      ? 'bg-[var(--primary-purple)] text-white'
-                      : 'hover:bg-[var(--bg-lavender)]'
+                  className={`w-full p-4 text-left rounded-lg transition-all duration-200 ${
+                    answers[currentQuestion] === answer.type
+                      ? 'bg-[var(--primary-purple)] text-white font-medium shadow-lg transform scale-102'
+                      : 'bg-white hover:bg-[var(--bg-lavender)] hover:shadow-md'
                   }`}
                 >
                   {answer.text}
